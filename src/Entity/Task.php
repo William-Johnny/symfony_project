@@ -32,6 +32,9 @@ class Task
     #[ORM\ManyToOne(inversedBy: 'assignedTasks')]
     private ?User $assignedTo = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $level = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +108,18 @@ class Task
     public function setAssignedTo(?User $assignedTo): static
     {
         $this->assignedTo = $assignedTo;
+
+        return $this;
+    }
+
+    public function getLevel(): ?string
+    {
+        return $this->level;
+    }
+
+    public function setLevel(string $level): static
+    {
+        $this->level = $level;
 
         return $this;
     }

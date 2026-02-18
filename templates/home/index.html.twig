@@ -1,9 +1,74 @@
 <!DOCTYPE html>
+{% apply inline_css %}
+{% block body %}
 <html>
     <head>
         <meta charset="UTF-8">
+        <style>
+            .task-item {
+                background-color: beige;
+                border-radius: 5px;
+                border-style: solid;
+                border-width: 1px;
+                border-color: black;
+                margin-bottom: 10px;
+            }
+
+            #header{
+                display: flex;
+                justify-content: space-between;
+            }
+        </style>
     </head>
     <body>
-        <h1>Welcome to Project</h1>
+        <div id="header">
+            <h1>Welcome to Project</h1>
+            <a href="{{ path('entity_create') }}" class="btn btn-primary">
+                Add item
+            </a>
+        </div>
+        <div class="news-list">
+            {% for item in tasks %}
+                <div class="task-item">
+
+                    <div class="content">
+                        <div id="mainInfo">
+                            <h2>
+                                {{ item.name }}
+                            </h2>
+                            <span class="level">{{ item.level }}</span>
+                        </div>
+
+                        <span>{{ item.description }}</span>
+                        <div class="info">
+                            <span>by {{ item.createdBy.username }}</span>
+                            <span>{{ item.createdAt|date('Y-m-d') }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p>No news yet.</p>
+            {% endfor %}
+        </div>
+         <script>
+            document.querySelectorAll(".level").forEach(element => {
+                switch (element.textContent) {
+                    case 'easy':
+                        element.style.color = "green";
+                        break;
+                    case 'medium':
+                        element.style.color = "yellow";
+                        break;
+                    case 'hard':
+                        element.style.color = "red";
+                        break;
+
+                    default:
+                        break;
+                }
+            });
+        </script>
     </body>
 </html>
+{% endblock %}
+{% endapply %}
