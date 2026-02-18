@@ -8,6 +8,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Form\CreateTaskFormType;
+use Symfony\Component\HttpFoundation\Request;
 
 final class HomeController extends AbstractController
 {
@@ -50,7 +52,7 @@ final class HomeController extends AbstractController
 
         if (!$task) {
             throw $this->createNotFoundException(
-                'No product found for id '
+                'No task found for id '
             );
         }
 
@@ -61,29 +63,35 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/entity/create', name: 'entity_create')]
-    public function createTask(EntityManagerInterface $entityManager): Response
+    public function createTask(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
-        $user->setUsername('John');
-        $user->setEmail('124@yopmail.com');
-        $user->setRoles(['tester']);
-        $user->setPassword('tester');
+        // $user->setUsername('John');
+        // $user->setEmail('124@yopmail.com');
+        // $user->setRoles(['tester']);
+        // $user->setPassword('tester');
 
-        $product = new Task();
-        $product->setName('thing to do');
-        $product->setDescription("Stuff to do like that and not like this cuz it's important to see this and not that");
-        $product->setLevel('hard');
-        $product->setState('not done');
-        $product->setCreatedBy($user);
-        $product->setCreatedAt(new \DateTimeImmutable('2023-02-11'));
+        $task = new Task();
+        // $task->setName('thing to do');
+        // $task->setDescription("Stuff to do like that and not like this cuz it's important to see this and not that");
+        // $task->setLevel('hard');
+        // $task->setState('not done');
+        // $task->setCreatedBy($user);
+        // $task->setCreatedAt(new \DateTimeImmutable('2023-02-11'));
 
-        // tell Doctrine you want to (eventually) save the Product (no queries yet)
-        $entityManager->persist($product);
-        $entityManager->persist($user);
+        $form = $this->createForm(CreateTaskFormType::class, $task);
+        $form->handleRequest($request);
 
-        // actually executes the queries (i.e. the INSERT query)
-        $entityManager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($task);
+            $entityManager->persist($user);
+            $entityManager->flush();
+        }
 
-        return new Response('Saved new product with id '.$product->getId());
+        return $this->render('home/newTask.html.twig', [
+            'registrationForm' => $form,
+        ]);
+
+        return new Response('Saved new task with id '.$task->getId());
     }
 }
