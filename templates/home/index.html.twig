@@ -20,6 +20,30 @@
             #header{
                 display: flex;
                 justify-content: space-between;
+                align-items: center;
+            }
+
+            #counters{
+                display: flex;
+                align-items: center;
+                font-size: 12px;
+                gap: 5px;
+                margin-bottom: 10px;
+            }
+
+            h2{
+                margin: 0px
+            }
+
+            #counters > span{
+                background-color: rgb(220,220,200);
+                border-radius: 20px;
+                font-weight: bold;
+                padding: 5px;
+            }
+
+            body{
+                font-family: "Helvetica", sans-serif;
             }
         </style>
     </head>
@@ -29,6 +53,14 @@
             <a href="{{ path('entity_create') }}" class="btn btn-primary">
                 Add item
             </a>
+        </div>
+        <div id="counters">
+            <h2>All tasks</h2>
+            <span>{{ tasks|length }}</span>
+            <h2>Done</h2>
+            <span>0</span>
+            <h2>Not assigned</h2>
+            <span>0</span>
         </div>
         <div class="news-list">
             {% for item in tasks %}
