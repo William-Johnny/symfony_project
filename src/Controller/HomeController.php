@@ -10,6 +10,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\CreateTaskFormType;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\Persistence\ManagerRegistry;
 
 final class HomeController extends AbstractController
 {
@@ -30,6 +31,15 @@ final class HomeController extends AbstractController
             'controller_name' => 'HomeController',
             'tasks' => $task,
         ]);
+    }
+
+    #[Route('/delete/{id}', name: 'task_delete', methods: ['POST'])]
+    public function delete(Task $task, EntityManagerInterface $entityManager): Response
+    {
+        $entityManager->remove($task);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_home');
     }
 
     #[Route('/entity/create', name: 'entity_create')]

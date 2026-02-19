@@ -12,6 +12,8 @@
                 border-width: 1px;
                 border-color: black;
                 margin-bottom: 10px;
+                display: flex;
+                justify-content: space-between;
             }
 
             #header{
@@ -45,6 +47,14 @@
                             <span>{{ item.createdAt|date('Y-m-d') }}</span>
                         </div>
                     </div>
+
+                    <form method="post" action="{{ path('task_delete', {id: item.id}) }}">
+                        <button type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="none" viewBox="0 0 24 24">
+                                <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M14 11v6M10 11v6"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             {% else %}
                 <p>No news yet.</p>
