@@ -49,7 +49,7 @@
     </head>
     <body>
         <div id="header">
-            <h1>Welcome to Project</h1>
+            <h1>Welcome to Project {{ username }}</h1>
             <a href="{{ path('entity_create') }}" class="btn btn-primary">
                 Add item
             </a>
@@ -96,7 +96,7 @@
                     </form>
                 </div>
             {% else %}
-                <p>No news yet.</p>
+                <p>No tasks yet.</p>
             {% endfor %}
         </div>
          <script>

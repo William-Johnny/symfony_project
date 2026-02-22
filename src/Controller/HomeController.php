@@ -11,25 +11,21 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Form\CreateTaskFormType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 final class HomeController extends AbstractController
 {
     #[Route('/home', name: 'app_home')]
-    public function show(EntityManagerInterface $entityManager): Response
+    public function show(EntityManagerInterface $entityManager, #[CurrentUser] User $user): Response
     {
         $task = $entityManager
             ->getRepository(Task::class)
             ->findAll();
 
-        if (!$task) {
-            throw $this->createNotFoundException(
-                'No task found for id '
-            );
-        }
-
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
             'tasks' => $task,
+            'username' => $user->getUsername(),
         ]);
     }
 
@@ -43,19 +39,10 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/entity/create', name: 'entity_create')]
-    public function createTask(Request $request, EntityManagerInterface $entityManager): Response
+    public function createTask(Request $request, EntityManagerInterface $entityManager, #[CurrentUser] User $user): Response
     {
-        $user = $entityManager
-            ->getRepository(User::class)
-            ->findOneBy(['email' => '126@yopmail.com']);
 
         $task = new Task();
-        // $task->setName('thing to do');
-        // $task->setDescription("Stuff to do like that and not like this cuz it's important to see this and not that");
-        // $task->setLevel('hard');
-        // $task->setState('not done');
-        // $task->setCreatedBy($user);
-        // $task->setCreatedAt(new \DateTimeImmutable('2023-02-11'));
 
         $form = $this->createForm(CreateTaskFormType::class, $task);
         $form->handleRequest($request);
@@ -65,7 +52,6 @@ final class HomeController extends AbstractController
             $task->setCreatedBy($user);
             $task->setCreatedAt(new \DateTimeImmutable('2023-02-11'));
             $entityManager->persist($task);
-            $entityManager->persist($user);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_home');
