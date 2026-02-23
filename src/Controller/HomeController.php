@@ -9,6 +9,7 @@ use App\Entity\Task;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\CreateTaskFormType;
+use App\Form\AssignFormType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -34,6 +35,61 @@ final class HomeController extends AbstractController
     {
         $entityManager->remove($task);
         $entityManager->flush();
+
+        return $this->redirectToRoute('app_home');
+    }
+
+    #[Route('/detail/{id}', name: 'task_detail')]
+    public function showTaskDetail(Task $task, EntityManagerInterface $entityManager): Response
+    {
+        $userRepository = $entityManager
+            ->getRepository(User::class);
+
+        return $this->render('task/taskDetail.html.twig', [
+            'task' => $task,
+            'users' => $userRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/task/{id}/assign', name: 'task_assign', methods: ['POST'])]
+    public function assign(
+        Task $task,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response
+    {
+        // Validate CSRF token
+        if (!$this->isCsrfTokenValid(
+            'assign_task_' . $task->getId(),
+            $request->request->get('_token')
+        )) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
+
+        $assigneeId = $request->request->get('assignee_id');
+
+        $userRepository = $em
+            ->getRepository(User::class);
+
+        if ($assigneeId) {
+            $user = $userRepository->find($assigneeId);
+
+            if (!$user) {
+                $this->addFlash('error', 'User not found.');
+                return $this->redirectToRoute('task_show', [
+                    'id' => $task->getId()
+                ]);
+            }
+
+            $task->setAssignedTo($user);
+        } else {
+            // Unassign if empty value selected
+            $task->setAssignedTo(null);
+        }
+
+        $em->flush();
+
+        $this->addFlash('success', 'Task assignment updated.');
 
         return $this->redirectToRoute('app_home');
     }
