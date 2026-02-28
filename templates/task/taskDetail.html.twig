@@ -3,17 +3,31 @@
 {% block title %}{{ task.name }}{% endblock %}
 
 {% block body %}
+<style>
+    .task-item {
+        background-color: beige;
+        border-radius: 5px;
+        border-style: solid;
+        border-width: 1px;
+        border-color: black;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+        color: black;
+        padding: 5px;
+    }
+</style>
 <div class="container mt-4">
 
     <div class="card shadow-sm">
         <div class="card-body">
 
-            {# Title #}
             <h2 class="card-title mb-3">
                 {{ task.name }}
             </h2>
 
-            {# Meta info (like GitLab issue header) #}
             <div class="text-muted mb-4">
                 Created by
                 <strong>{{ task.createdBy.username }}</strong>
@@ -22,7 +36,6 @@
 
             <hr>
 
-            {# Description #}
             <div class="mb-4">
                 <h5>Description</h5>
                 <div class="p-3 bg-light rounded">
@@ -32,7 +45,6 @@
 
             <hr>
 
-            {# Assignee Section #}
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h5>Assigned To</h5>
@@ -73,7 +85,6 @@
                             </button>
                         </div>
 
-                        {# CSRF token if using Symfony #}
                         <input type="hidden"
                                name="_token"
                                value="{{ csrf_token('assign_task_' ~ task.id) }}">
@@ -81,8 +92,81 @@
                 </div>
             </div>
 
+            <div class="news-list">
+                <h5>Subtasks</h5>
+                {% for item in task.childTask %}
+                    <a href="{{ path('task_detail', {id: item.id}) }}" class="task-item">
+
+                        <div class="content">
+                            <div id="mainInfo">
+                                <h2>
+                                    {{ item.name }}
+                                </h2>
+                                <span class="level">{{ item.level }}</span>
+                            </div>
+
+                            <span>{{ item.description }}</span>
+                            <div class="info">
+                                <span>by {{ item.createdBy.username }}</span>
+                                <span>{{ item.createdAt|date('Y-m-d') }}</span>
+                            </div>
+                        </div>
+
+                        {% if item.assignedTo %}
+                            {% if item.assignedTo.username == username %}
+                                <p>This task is assigned to you</p>
+                            {% else %}
+                                <p>This task is assigned to {{ item.assignedTo.username }}</p>
+                            {% endif %}
+                        {% else %}
+                            <p>This task is not assigned!</p>
+                        {% endif %}
+
+                        <form method="post" action="{{ path('task_delete', {id: item.id}) }}">
+                            <button type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M14 11v6M10 11v6"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </a>
+                {% else %}
+                    <p>No subtasks yet.</p>
+                {% endfor %}
+            </div>
+
+            <hr>
+
+            <div id="subtaskFormContainer" style="display:none;">
+                <h1>Create new subTask</h1>
+
+                {{ form_errors(subtaskForm) }}
+
+                {{ form_start(subtaskForm) }}
+                    {{ form_row(subtaskForm.name) }}
+                    {{ form_row(subtaskForm.description) }}
+                    {{ form_row(subtaskForm.level) }}
+
+
+                    <button type="submit" class="btn">Add</button>
+                {{ form_end(subtaskForm) }}
+                <hr>
+            </div>
+
+            <div>
+                <button id='subtaskBtn'
+                        class="btn btn-outline-primary">
+                    Add subtasks
+                </button>
+            </div>
+
         </div>
     </div>
 
 </div>
+<script>
+    document.getElementById('subtaskBtn').addEventListener('click', function() {
+        document.getElementById('subtaskFormContainer').style.display = 'block';
+    });
+</script>
 {% endblock %}

@@ -40,14 +40,30 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/detail/{id}', name: 'task_detail')]
-    public function showTaskDetail(Task $task, EntityManagerInterface $entityManager): Response
+    public function showTaskDetail(Task $task, EntityManagerInterface $entityManager, #[CurrentUser] User $user, Request $request): Response
     {
+        $subtask = new Task();
+        $form = $this->createForm(CreateTaskFormType::class, $subtask);
         $userRepository = $entityManager
             ->getRepository(User::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $subtask->setState('not done');
+            $subtask->setCreatedBy($user);
+            $subtask->setCreatedAt(new \DateTimeImmutable());
+            $task->addChildTask($subtask);
+            $entityManager->persist($subtask);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('task_detail',['id' => $task->getId()]);
+        }
 
         return $this->render('task/taskDetail.html.twig', [
             'task' => $task,
             'users' => $userRepository->findAll(),
+            'subtaskForm' => $form,
         ]);
     }
 
