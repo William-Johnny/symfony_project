@@ -2,40 +2,115 @@
 
 {% block title %}Log in!{% endblock %}
 
+{% block stylesheets %}
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Helvetica", sans-serif;
+        }
+
+        .login-card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-card h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            background-color: #667eea;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #5a67d8;
+        }
+
+        .register-link {
+            text-align: center;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            border-radius: 8px;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <form method="post">
-        {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
+    <div class="login-card">
+        <form method="post">
 
-        {% if app.user %}
-            <div class="mb-3">
-                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
-            </div>
-        {% endif %}
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        Don't have an account ? <a href="/register">Register here !</a>
-        <br>
-        <br>
-        <label for="username">Email</label>
-        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-        <label for="password">Password</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+            {% if app.user %}
+                <div class="alert alert-info">
+                    You are logged in as {{ app.user.userIdentifier }},
+                    <a href="{{ logout_path() }}">Logout</a>
+                </div>
+            {% endif %}
 
-        {#
-            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html
+            <h1>Please sign in</h1>
 
-            <div class="checkbox mb-3">
-                <input type="checkbox" name="_remember_me" id="_remember_me">
-                <label for="_remember_me">Remember me</label>
-            </div>
-        #}
+            <a href="/register" class="register-link">
+                Don't have an account? Register here!
+            </a>
 
-        <button class="btn btn-lg btn-primary" type="submit">
-            Sign in
-        </button>
-    </form>
+            <label for="username">Email</label>
+            <input type="email"
+                   value="{{ last_username }}"
+                   name="_username"
+                   id="username"
+                   class="form-control"
+                   autocomplete="email"
+                   required autofocus>
+
+            </br>
+            </br>
+
+            <label for="password">Password</label>
+            <input type="password"
+                   name="_password"
+                   id="password"
+                   class="form-control"
+                   autocomplete="current-password"
+                   required>
+
+            <input type="hidden"
+                   name="_csrf_token"
+                   value="{{ csrf_token('authenticate') }}">
+
+            <button class="btn btn-primary" type="submit">
+                Sign in
+            </button>
+
+        </form>
+    </div>
 {% endblock %}
