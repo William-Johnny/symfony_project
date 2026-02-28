@@ -48,11 +48,25 @@
             body{
                 font-family: "Helvetica", sans-serif;
             }
+
+            #taskTitle{
+                display: flex;
+                gap: 5px;
+                align-items: center;
+            }
+
+            button {
+                padding:0;
+                margin:0;
+                border:0;
+                background-color:transparent;
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
         <div id="header">
-            <h1>Welcome to Project {{ username }}</h1>
+            <h1>Welcome to your Project, {{ username }}</h1>
             <a href="{{ path('entity_create') }}" class="btn btn-primary">
                 Add item
             </a>
@@ -71,11 +85,20 @@
 
                     <div class="content">
                         <div id="mainInfo">
-                            <h2>
-                                {{ item.name }}
-                            </h2>
-                            <span class="level">{{ item.level }}</span>
-                        </div>
+                            <div id=taskTitle>
+                                <h2>
+                                    {{ item.name }}
+                                </h2>
+                                <form method="post" action="{{ path('task_delete', {id: item.id}) }}">
+                                        <button type="submit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="#44444E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M14 11v6M10 11v6"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </form>
+                                <span class="level">{{ item.level }}</span>
+                            </div>
 
                         <span>{{ item.description }}</span>
                         <div class="info">
@@ -94,13 +117,9 @@
                         <p>This task is not assigned!</p>
                     {% endif %}
 
-                    <form method="post" action="{{ path('task_delete', {id: item.id}) }}">
-                        <button type="submit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="none" viewBox="0 0 24 24">
-                                <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M14 11v6M10 11v6"/>
-                            </svg>
-                        </button>
-                    </form>
+                    <div>
+                        <input type="checkbox" id="validation" name="validation" checked />
+                    </div>
                 </a>
             {% else %}
                 <p>No tasks yet.</p>
