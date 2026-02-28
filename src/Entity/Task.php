@@ -37,18 +37,18 @@ class Task
     #[ORM\Column(length: 255)]
     private ?string $level = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'subtask')]
-    private ?self $childTask = null;
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'childTask')]
+    private ?self $parentTask = null;
 
     /**
      * @var Collection<int, self>
      */
-    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'childTask')]
-    private Collection $subtask;
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parentTask')]
+    private Collection $childTask;
 
     public function __construct()
     {
-        $this->subtask = new ArrayCollection();
+        $this->childTask = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -140,14 +140,14 @@ class Task
         return $this;
     }
 
-    public function getChildTask(): ?self
+    public function getParentTask(): ?self
     {
-        return $this->childTask;
+        return $this->parentTask;
     }
 
-    public function setChildTask(?self $childTask): static
+    public function setParentTask(?self $parentTask): static
     {
-        $this->childTask = $childTask;
+        $this->parentTask = $parentTask;
 
         return $this;
     }
@@ -155,27 +155,27 @@ class Task
     /**
      * @return Collection<int, self>
      */
-    public function getSubtask(): Collection
+    public function getChildTask(): Collection
     {
-        return $this->subtask;
+        return $this->childTask;
     }
 
-    public function addSubtask(self $subtask): static
+    public function addChildTask(self $childTask): static
     {
-        if (!$this->subtask->contains($subtask)) {
-            $this->subtask->add($subtask);
-            $subtask->setChildTask($this);
+        if (!$this->childTask->contains($childTask)) {
+            $this->childTask->add($childTask);
+            $childTask->setParentTask($this);
         }
 
         return $this;
     }
 
-    public function removeSubtask(self $subtask): static
+    public function removeChildTask(self $childTask): static
     {
-        if ($this->subtask->removeElement($subtask)) {
+        if ($this->childTask->removeElement($childTask)) {
             // set the owning side to null (unless already changed)
-            if ($subtask->getChildTask() === $this) {
-                $subtask->setChildTask(null);
+            if ($childTask->getparentTask() === $this) {
+                $childTask->setparentTask(null);
             }
         }
 
