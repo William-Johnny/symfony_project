@@ -20,6 +20,7 @@
         margin: 40px auto;
         max-width: 1000px;
         color: var(--text-main);
+        display: block
     }
 
     /* HEADER */
@@ -172,7 +173,7 @@
 </style>
 <div id="header">
     <h1>Welcome to your Project, {{ username }}</h1>
-    <a href="{{ path('entity_create') }}" class="btn btn-primary">
+    <a href="{{ path('entity_create') }}" class="btn">
         Add item
     </a>
 </div>
