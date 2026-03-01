@@ -17,17 +17,38 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 final class HomeController extends AbstractController
 {
-    #[Route('/home', name: 'app_home')]
-    public function show(EntityManagerInterface $entityManager, #[CurrentUser] User $user): Response
-    {
-        $task = $entityManager
+    #[Route('/home/{filter}', name: 'app_home', defaults: ['filter' => 'not_done'])]
+    public function index(
+        string $filter,
+        EntityManagerInterface $entityManager,
+        #[CurrentUser] User $user
+    ): Response {
+
+        $criteria = [];
+
+        switch ($filter) {
+            case 'done':
+                $criteria = ['state' => 'done'];
+                break;
+
+            case 'not_assigned':
+                $criteria = ['assignedTo' => null];
+                break;
+
+            case 'not_done':
+            default:
+                $criteria = ['state' => 'not done'];
+                break;
+        }
+
+        $tasks = $entityManager
             ->getRepository(Task::class)
-            ->findAll();
+            ->findBy($criteria);
 
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
-            'tasks' => $task,
+            'tasks' => $tasks,
             'username' => $user->getUsername(),
+            'currentFilter' => $filter
         ]);
     }
 
@@ -35,6 +56,15 @@ final class HomeController extends AbstractController
     public function delete(Task $task, EntityManagerInterface $entityManager): Response
     {
         $entityManager->remove($task);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_home');
+    }
+
+    #[Route('/validation/{id}', name: 'task_validation', methods: ['POST'])]
+    public function validate(Task $task, EntityManagerInterface $entityManager): Response
+    {
+        $task->setState("done");
         $entityManager->flush();
 
         return $this->redirectToRoute('app_home');

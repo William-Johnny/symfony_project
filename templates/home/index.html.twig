@@ -16,6 +16,14 @@
         padding: 5px;
     }
 
+    a{
+        text-decoration: none;
+        color: black;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     #header{
         display: flex;
         justify-content: space-between;
@@ -34,7 +42,7 @@
         margin: 0px
     }
 
-    #counters > span{
+    #counters > a > span{
         background-color: rgb(220,220,200);
         border-radius: 20px;
         font-weight: bold;
@@ -66,12 +74,19 @@
     </a>
 </div>
 <div id="counters">
-    <h2>All tasks</h2>
-    <span>{{ tasks|length }}</span>
-    <h2>Done</h2>
-    <span>0</span>
-    <h2>Not assigned</h2>
-    <span>0</span>
+    <a href="{{ path('app_home', {filter: 'not_done'}) }}">
+        <h2>All tasks</h2>
+        <span>{{ tasks|length }}</span>
+    </a>
+     <a href="{{ path('app_home', {filter: 'done'}) }}">
+        <h2>Done</h2>
+        <span>0</span>
+    </a>
+     <a href="{{ path('app_home', {filter: 'not_assigned'}) }}">
+        <h2>Not assigned</h2>
+        <span>0</span>
+    </a>
+
 </div>
 <div class="news-list">
     {% for item in tasks %}
@@ -110,9 +125,28 @@
                 <p>This task is not assigned!</p>
             {% endif %}
 
-            <div>
-                <input type="checkbox" id="validation" name="validation" checked />
-            </div>
+            {% if item.state == 'done' %}
+                <form method="post"
+                    action="{{ path('task_validation', {id: item.id}) }}"
+                    onclick="event.stopPropagation();">
+
+                    <input type="checkbox"
+                        name="validation"
+                        onchange="this.form.submit()"
+                        checked>
+
+                </form>
+            {% else %}
+                <form method="post"
+                    action="{{ path('task_validation', {id: item.id}) }}"
+                    onclick="event.stopPropagation();">
+
+                    <input type="checkbox"
+                        name="validation"
+                        onchange="this.form.submit()">
+
+                </form>
+            {% endif %}
         </div>
     {% else %}
         <p>No tasks yet.</p>
