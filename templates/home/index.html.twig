@@ -1,69 +1,172 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 <style>
+    :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --primary: #4f46e5;
+        --primary-hover: #4338ca;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --success: #16a34a;
+        --warning: #f59e0b;
+        --danger: #dc2626;
+    }
+
+    body {
+        font-family: "Inter", "Helvetica", sans-serif;
+        background-color: var(--bg);
+        margin: 40px auto;
+        max-width: 1000px;
+        color: var(--text-main);
+    }
+
+    /* HEADER */
+    #header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    #header h1 {
+        font-size: 26px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .btn {
+        background-color: var(--primary);
+        color: white;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: var(--primary-hover);
+    }
+
+    /* COUNTERS */
+    #counters {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    #counters a {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 18px;
+        text-decoration: none;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.2s ease;
+    }
+
+    #counters a:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+    }
+
+    #counters span {
+        background-color: var(--bg);
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* TASK CARD */
     .task-item {
-        background-color: beige;
-        border-radius: 5px;
-        border-style: solid;
-        border-width: 1px;
-        border-color: black;
-        margin-bottom: 10px;
+        background-color: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-decoration: none;
-        color: black;
-        padding: 5px;
+        flex-direction: column;
+        gap: 10px;
     }
 
-    a{
-        text-decoration: none;
-        color: black;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .task-item:hover {
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        transform: translateY(-3px);
     }
 
-    #header{
+    .task-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    #counters{
+    .task-title {
         display: flex;
         align-items: center;
+        gap: 12px;
+    }
+
+    .task-title h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .level {
         font-size: 12px;
-        gap: 5px;
-        margin-bottom: 10px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 600;
+        text-transform: uppercase;
     }
 
-    h2{
-        margin: 0px
+    .easy { background-color: #dcfce7; color: var(--success); }
+    .medium { background-color: #fef3c7; color: var(--warning); }
+    .hard { background-color: #fee2e2; color: var(--danger); }
+
+    .task-description {
+        color: var(--text-muted);
+        font-size: 14px;
     }
 
-    #counters > a > span{
-        background-color: rgb(220,220,200);
-        border-radius: 20px;
-        font-weight: bold;
-        padding: 5px;
-    }
-
-    body{
-        font-family: "Helvetica", sans-serif;
-    }
-
-    #taskTitle{
+    .task-meta {
         display: flex;
-        gap: 5px;
-        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .assignment {
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .assigned-to-you {
+        color: var(--primary);
+    }
+
+    .not-assigned {
+        color: var(--danger);
     }
 
     button {
-        padding:0;
-        margin:0;
-        border:0;
-        background-color:transparent;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
         cursor: pointer;
     }
 </style>
@@ -90,63 +193,53 @@
 </div>
 <div class="news-list">
     {% for item in tasksDisplayed %}
-        <div href="{{ path('task_detail', {id: item.id}) }}" class="task-item" onclick="window.location='{{ path('task_detail', {id: item.id}) }}'">
-            <div class="content">
-                <div id="mainInfo">
-                    <div id=taskTitle>
-                        <h2>
-                            {{ item.name }}
-                        </h2>
-                        <form method="post" action="{{ path('task_delete', {id: item.id}) }}" onclick="event.stopPropagation();">
-                                <button type="submit">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="#44444E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M14 11v6M10 11v6"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </form>
-                        <span class="level">{{ item.level }}</span>
-                    </div>
+        <div class="task-item" onclick="window.location='{{ path('task_detail', {id: item.id}) }}'">
 
-                <span>{{ item.description }}</span>
-                <div class="info">
-                    <span>by {{ item.createdBy.username }}</span>
-                    <span>{{ item.createdAt|date('Y-m-d') }}</span>
+            <div class="task-top">
+                <div class="task-title">
+                    <h2>{{ item.name }}</h2>
+                    <span class="level {{ item.level }}">{{ item.level }}</span>
+                    <form method="post"
+                        action="{{ path('task_delete', {id: item.id}) }}"
+                        onclick="event.stopPropagation();">
+                        <button type="submit">
+                            🗑️
+                        </button>
+                    </form>
                 </div>
-            </div>
-
-            {% if item.assignedTo %}
-                {% if item.assignedTo.username == username %}
-                    <p>This task is assigned to you</p>
-                {% else %}
-                    <p>This task is assigned to {{ item.assignedTo.username }}</p>
-                {% endif %}
-            {% else %}
-                <p>This task is not assigned!</p>
-            {% endif %}
-
-            {% if item.state == 'done' %}
                 <form method="post"
                     action="{{ path('task_validation', {id: item.id}) }}"
                     onclick="event.stopPropagation();">
-
                     <input type="checkbox"
                         name="validation"
                         onchange="this.form.submit()"
-                        checked>
-
+                        {% if item.state == 'done' %}checked{% endif %}>
                 </form>
+            </div>
+            {% if item.assignedTo %}
+                {% if item.assignedTo.username == username %}
+                    <div class="assignment assigned-to-you">
+                        Assigned to you
+                    </div>
+                {% else %}
+                    <div class="assignment">
+                        Assigned to {{ item.assignedTo.username }}
+                    </div>
+                {% endif %}
             {% else %}
-                <form method="post"
-                    action="{{ path('task_validation', {id: item.id}) }}"
-                    onclick="event.stopPropagation();">
-
-                    <input type="checkbox"
-                        name="validation"
-                        onchange="this.form.submit()">
-
-                </form>
+                <div class="assignment not-assigned">
+                    Not assigned
+                </div>
             {% endif %}
+
+            <div class="task-description">
+                {{ item.description }}
+            </div>
+
+            <div class="task-meta">
+                <span>by {{ item.createdBy.username }}</span>
+                <span>{{ item.createdAt|date('M d, Y') }}</span>
+            </div>
         </div>
     {% else %}
         <p>No tasks yet.</p>
