@@ -3,18 +3,98 @@
 {% block title %}Register{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+        }
 
-    {{ form_errors(registrationForm) }}
+        body {
+            background-color: var(--bg);
+            font-family: "Inter", sans-serif;
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+        #backBtn{
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 50px;
+            position: absolute;
+            top:50px;
+            left: 50px;
+        }
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+        #card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .btn-modern {
+            background-color: var(--primary);
+            color: white;
+            border-radius: 10px;
+            padding: 8px 14px;
+            border: none;
+            transition: 0.2s ease;
+        }
+
+        #createDiv{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        input{
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        label{
+            margin-right:10px;
+        }
+
+    </style>
+    <a href="/" id="backBtn">
+        <-
+    </a>
+    <div id="card">
+        <h1>Register</h1>
+
+        {{ form_errors(registrationForm) }}
+
+        {{ form_start(registrationForm) }}
+            {{ form_row(registrationForm.username) }}
+            {{ form_row(registrationForm.email) }}
+            {{ form_row(registrationForm.plainPassword, {
+                label: 'Password'
+            }) }}
+            {{ form_row(registrationForm.agreeTerms) }}
+
+            <div id="createDiv">
+                <button type="submit" class="btn-modern">Register</button>
+            </div>
+        {{ form_end(registrationForm) }}
+    </div>
 {% endblock %}

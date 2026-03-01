@@ -4,8 +4,21 @@
 
 {% block stylesheets %}
     <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-color: var(--bg);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -39,13 +52,14 @@
             border-radius: 10px;
             padding: 12px;
             font-weight: 600;
-            background-color: #667eea;
+            background-color: var(--primary);
             border: none;
             transition: 0.3s;
+            color: white;
         }
 
         .btn-primary:hover {
-            background-color: #5a67d8;
+            background-color: var(--primary);
         }
 
         .register-link {
