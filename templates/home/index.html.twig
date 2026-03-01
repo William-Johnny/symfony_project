@@ -76,20 +76,20 @@
 <div id="counters">
     <a href="{{ path('app_home', {filter: 'not_done'}) }}">
         <h2>All tasks</h2>
-        <span>{{ tasks|length }}</span>
+        <span>{{ tasksNotDone|length }}</span>
     </a>
      <a href="{{ path('app_home', {filter: 'done'}) }}">
         <h2>Done</h2>
-        <span>0</span>
+        <span>{{ tasksDone|length }}</span>
     </a>
      <a href="{{ path('app_home', {filter: 'not_assigned'}) }}">
         <h2>Not assigned</h2>
-        <span>0</span>
+        <span>{{ tasksNotAssigned|length }}</span>
     </a>
 
 </div>
 <div class="news-list">
-    {% for item in tasks %}
+    {% for item in tasksDisplayed %}
         <div href="{{ path('task_detail', {id: item.id}) }}" class="task-item" onclick="window.location='{{ path('task_detail', {id: item.id}) }}'">
             <div class="content">
                 <div id="mainInfo">

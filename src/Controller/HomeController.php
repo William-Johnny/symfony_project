@@ -41,12 +41,27 @@ final class HomeController extends AbstractController
                 break;
         }
 
-        $tasks = $entityManager
+        $tasksDisplayed = $entityManager
             ->getRepository(Task::class)
             ->findBy($criteria);
 
+        $tasksNotDone = $entityManager
+            ->getRepository(Task::class)
+            ->findBy(['state' => 'not done']);
+
+        $tasksDone = $entityManager
+            ->getRepository(Task::class)
+            ->findBy(['state' => 'done']);
+
+        $tasksNotAssigned = $entityManager
+            ->getRepository(Task::class)
+            ->findBy(['assignedTo' => null]);
+
         return $this->render('home/index.html.twig', [
-            'tasks' => $tasks,
+            'tasksDisplayed' => $tasksDisplayed,
+            'tasksNotDone' => $tasksNotDone,
+            'tasksDone' => $tasksDone,
+            'tasksNotAssigned' => $tasksNotAssigned,
             'username' => $user->getUsername(),
             'currentFilter' => $filter
         ]);
