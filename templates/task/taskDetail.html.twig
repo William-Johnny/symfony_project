@@ -4,45 +4,157 @@
 
 {% block body %}
 <style>
-    .task-item {
-        background-color: beige;
-        border-radius: 5px;
-        border-style: solid;
-        border-width: 1px;
-        border-color: black;
-        margin-bottom: 10px;
+    :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --primary: #4f46e5;
+        --primary-hover: #4338ca;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --success: #16a34a;
+        --warning: #f59e0b;
+        --danger: #dc2626;
+    }
+
+    body {
+        background-color: var(--bg);
+        font-family: "Inter", sans-serif;
+        color: var(--text-main);
+    }
+
+    .card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    }
+
+    .card-title {
+        font-weight: 600;
+        font-size: 24px;
+    }
+
+    .task-meta {
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .section-box {
+        background: #f1f5f9;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+
+    .badge-modern {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .level-easy { background: #dcfce7; color: var(--success); }
+    .level-medium { background: #fef3c7; color: var(--warning); }
+    .level-hard { background: #fee2e2; color: var(--danger); }
+
+    .btn-modern {
+        background-color: var(--primary);
+        color: white;
+        border-radius: 10px;
+        padding: 8px 14px;
+        border: none;
+        transition: 0.2s ease;
+    }
+
+    .btn-modern:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .subtask-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .subtask-card:hover {
+        box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+    }
+
+    .subtask-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        text-decoration: none;
-        color: black;
-        padding: 5px;
     }
+
+    .subtask-title {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .subtask-meta {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .assigned-you {
+        color: var(--primary);
+        font-weight: 500;
+        font-size: 13px;
+    }
+
+    .unassigned {
+        color: var(--danger);
+        font-size: 13px;
+    }
+
+    select.form-select {
+        border-radius: 10px;
+    }
+
+    .divider {
+        margin: 30px 0;
+        border-top: 1px solid var(--border);
+    }
+
+    #backBtn{
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 20px;
+    }
+
 </style>
 <div class="container mt-4">
     <div class="card shadow-sm">
+        <a href="/home/not_done" id="backBtn">
+            <-
+        </a>
         <div class="card-body">
 
-            <h2 class="card-title mb-3">
+            <h2 class="card-title mb-2">
                 {{ task.name }}
+                <span class="badge-modern level-{{ task.level }}">
+                    {{ task.level }}
+                </span>
             </h2>
 
-            <div class="text-muted mb-4">
-                Created by
-                <strong>{{ task.createdBy.username }}</strong>
-                on {{ task.createdAt|date('Y-m-d H:i') }}
+            <div class="task-meta mb-4">
+                Created by <strong>{{ task.createdBy.username }}</strong>
+                on {{ task.createdAt|date('M d, Y H:i') }}
             </div>
-
-            <hr>
 
             <div class="mb-4">
                 <h5>Description</h5>
-                <div class="p-3 bg-light rounded">
+                <div class="section-box">
                     {{ task.description|nl2br }}
                 </div>
             </div>
-
-            <hr>
 
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -78,8 +190,7 @@
                                 {% endfor %}
                             </select>
 
-                            <button type="submit"
-                                    class="btn btn-outline-primary">
+                            <button type="submit" class="btn-modern">
                                 Assign
                             </button>
                         </div>
@@ -91,50 +202,58 @@
                 </div>
             </div>
 
-            <div class="news-list">
-                <h5>Subtasks</h5>
-                {% for item in task.childTask %}
-                    <a href="{{ path('task_detail', {id: item.id}) }}" class="task-item">
+            <h5 class="mb-3">Subtasks</h5>
 
-                        <div class="content">
-                            <div id="mainInfo">
-                                <h2>
-                                    {{ item.name }}
-                                </h2>
-                                <span class="level">{{ item.level }}</span>
+            {% for item in task.childTask %}
+                <div class="subtask-card">
+
+                    <div class="subtask-header">
+                        <a href="{{ path('task_detail', {id: item.id}) }}"
+                        class="subtask-title text-decoration-none text-dark">
+                            {{ item.name }}
+                        </a>
+
+                        <span class="badge-modern level-{{ item.level }}">
+                            {{ item.level }}
+                        </span>
+                    </div>
+
+                    <div class="subtask-meta">
+                        by {{ item.createdBy.username }}
+                        • {{ item.createdAt|date('M d, Y') }}
+                    </div>
+
+                    <div class="text-muted">
+                        {{ item.description }}
+                    </div>
+
+                    {% if item.assignedTo %}
+                        {% if item.assignedTo.username == username %}
+                            <div class="assigned-you">
+                                Assigned to you
                             </div>
-
-                            <span>{{ item.description }}</span>
-                            <div class="info">
-                                <span>by {{ item.createdBy.username }}</span>
-                                <span>{{ item.createdAt|date('Y-m-d') }}</span>
-                            </div>
-                        </div>
-
-                        {% if item.assignedTo %}
-                            {% if item.assignedTo.username == username %}
-                                <p>This task is assigned to you</p>
-                            {% else %}
-                                <p>This task is assigned to {{ item.assignedTo.username }}</p>
-                            {% endif %}
                         {% else %}
-                            <p>This task is not assigned!</p>
+                            <div class="subtask-meta">
+                                Assigned to {{ item.assignedTo.username }}
+                            </div>
                         {% endif %}
+                    {% else %}
+                        <div class="unassigned">
+                            Not assigned
+                        </div>
+                    {% endif %}
 
-                        <form method="post" action="{{ path('task_delete', {id: item.id}) }}">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M14 11v6M10 11v6"/>
-                                </svg>
-                            </button>
-                        </form>
-                    </a>
-                {% else %}
-                    <p>No subtasks for this one !</p>
-                {% endfor %}
-            </div>
+                    <form method="post"
+                        action="{{ path('task_delete', {id: item.id}) }}">
+                        <button type="submit" class="text-danger">
+                            Delete
+                        </button>
+                    </form>
 
-            <hr>
+                </div>
+            {% else %}
+                <p class="text-muted">No subtasks for this one.</p>
+            {% endfor %}
 
             <div id="subtaskFormContainer" style="display:none;">
                 <h1>Create new subTask</h1>
@@ -149,15 +268,11 @@
 
                     <button type="submit" class="btn">Add</button>
                 {{ form_end(subtaskForm) }}
-                <hr>
             </div>
 
-            <div>
-                <button id='subtaskBtn'
-                        class="btn btn-outline-primary">
-                    Add subtasks
-                </button>
-            </div>
+            <button type="submit" class="btn-modern" id='subtaskBtn'>
+                Add Subtask
+            </button>
 
         </div>
     </div>
@@ -165,7 +280,8 @@
 </div>
 <script>
     document.getElementById('subtaskBtn').addEventListener('click', function() {
-        document.getElementById('subtaskFormContainer').style.display = 'block';
+        const container = document.getElementById('subtaskFormContainer');
+        container.style.display = container.style.display === 'none' ? 'block' : 'none';
     });
 </script>
 {% endblock %}
