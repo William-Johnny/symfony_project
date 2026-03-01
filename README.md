@@ -1,6 +1,6 @@
-## Project
+# Project
 
-Project is a task management webiste made using symfony that helps students organise their group projects by making sure each person has the same amount of work to do.
+Project is a task management website made using symfony that helps students organise their group projects by making sure each person has the same amount of work to do.
 
 ## Installation
 ```
@@ -11,7 +11,7 @@ Project is a task management webiste made using symfony that helps students orga
   cd symfony_project
 ```
 
-# Run the project
+## Run the project
 ```
 symfony server:start
 ```
