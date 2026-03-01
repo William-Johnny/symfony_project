@@ -1,149 +1,139 @@
-<!DOCTYPE html>
-{% apply inline_css %}
+{% extends 'base.html.twig' %}
 {% block body %}
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <style>
-            .task-item {
-                background-color: beige;
-                border-radius: 5px;
-                border-style: solid;
-                border-width: 1px;
-                border-color: black;
-                margin-bottom: 10px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                text-decoration: none;
-                color: black;
-                padding: 5px;
-            }
+<style>
+    .task-item {
+        background-color: beige;
+        border-radius: 5px;
+        border-style: solid;
+        border-width: 1px;
+        border-color: black;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+        color: black;
+        padding: 5px;
+    }
 
-            #header{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
+    #header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-            #counters{
-                display: flex;
-                align-items: center;
-                font-size: 12px;
-                gap: 5px;
-                margin-bottom: 10px;
-            }
+    #counters{
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
 
-            h2{
-                margin: 0px
-            }
+    h2{
+        margin: 0px
+    }
 
-            #counters > span{
-                background-color: rgb(220,220,200);
-                border-radius: 20px;
-                font-weight: bold;
-                padding: 5px;
-            }
+    #counters > span{
+        background-color: rgb(220,220,200);
+        border-radius: 20px;
+        font-weight: bold;
+        padding: 5px;
+    }
 
-            body{
-                font-family: "Helvetica", sans-serif;
-            }
+    body{
+        font-family: "Helvetica", sans-serif;
+    }
 
-            #taskTitle{
-                display: flex;
-                gap: 5px;
-                align-items: center;
-            }
+    #taskTitle{
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
 
-            button {
-                padding:0;
-                margin:0;
-                border:0;
-                background-color:transparent;
-                cursor: pointer;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="header">
-            <h1>Welcome to your Project, {{ username }}</h1>
-            <a href="{{ path('entity_create') }}" class="btn btn-primary">
-                Add item
-            </a>
-        </div>
-        <div id="counters">
-            <h2>All tasks</h2>
-            <span>{{ tasks|length }}</span>
-            <h2>Done</h2>
-            <span>0</span>
-            <h2>Not assigned</h2>
-            <span>0</span>
-        </div>
-        <div class="news-list">
-            {% for item in tasks %}
-                <a href="{{ path('task_detail', {id: item.id}) }}" class="task-item">
-
-                    <div class="content">
-                        <div id="mainInfo">
-                            <div id=taskTitle>
-                                <h2>
-                                    {{ item.name }}
-                                </h2>
-                                <form method="post" action="{{ path('task_delete', {id: item.id}) }}">
-                                        <button type="submit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="#44444E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M14 11v6M10 11v6"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </form>
-                                <span class="level">{{ item.level }}</span>
+    button {
+        padding:0;
+        margin:0;
+        border:0;
+        background-color:transparent;
+        cursor: pointer;
+    }
+</style>
+<div id="header">
+    <h1>Welcome to your Project, {{ username }}</h1>
+    <a href="{{ path('entity_create') }}" class="btn btn-primary">
+        Add item
+    </a>
+</div>
+<div id="counters">
+    <h2>All tasks</h2>
+    <span>{{ tasks|length }}</span>
+    <h2>Done</h2>
+    <span>0</span>
+    <h2>Not assigned</h2>
+    <span>0</span>
+</div>
+<div class="news-list">
+    {% for item in tasks %}
+        <div href="{{ path('task_detail', {id: item.id}) }}" class="task-item" onclick="window.location='{{ path('task_detail', {id: item.id}) }}'">
+            <div class="content">
+                <div id="mainInfo">
+                    <div id=taskTitle>
+                        <h2>
+                            {{ item.name }}
+                        </h2>
+                        <form method="post" action="{{ path('task_delete', {id: item.id}) }}" onclick="event.stopPropagation();">
+                                <button type="submit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="#44444E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M5 6v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M14 11v6M10 11v6"/>
+                                    </svg>
+                                </button>
                             </div>
-
-                        <span>{{ item.description }}</span>
-                        <div class="info">
-                            <span>by {{ item.createdBy.username }}</span>
-                            <span>{{ item.createdAt|date('Y-m-d') }}</span>
-                        </div>
+                        </form>
+                        <span class="level">{{ item.level }}</span>
                     </div>
 
-                    {% if item.assignedTo %}
-                        {% if item.assignedTo.username == username %}
-                            <p>This task is assigned to you</p>
-                        {% else %}
-                            <p>This task is assigned to {{ item.assignedTo.username }}</p>
-                        {% endif %}
-                    {% else %}
-                        <p>This task is not assigned!</p>
-                    {% endif %}
+                <span>{{ item.description }}</span>
+                <div class="info">
+                    <span>by {{ item.createdBy.username }}</span>
+                    <span>{{ item.createdAt|date('Y-m-d') }}</span>
+                </div>
+            </div>
 
-                    <div>
-                        <input type="checkbox" id="validation" name="validation" checked />
-                    </div>
-                </a>
+            {% if item.assignedTo %}
+                {% if item.assignedTo.username == username %}
+                    <p>This task is assigned to you</p>
+                {% else %}
+                    <p>This task is assigned to {{ item.assignedTo.username }}</p>
+                {% endif %}
             {% else %}
-                <p>No tasks yet.</p>
-            {% endfor %}
-        </div>
-         <script>
-            document.querySelectorAll(".level").forEach(element => {
-                switch (element.textContent) {
-                    case 'easy':
-                        element.style.color = "green";
-                        break;
-                    case 'medium':
-                        element.style.color = "orange";
-                        break;
-                    case 'hard':
-                        element.style.color = "red";
-                        break;
+                <p>This task is not assigned!</p>
+            {% endif %}
 
-                    default:
-                        break;
-                }
-            });
-        </script>
-    </body>
-</html>
+            <div>
+                <input type="checkbox" id="validation" name="validation" checked />
+            </div>
+        </div>
+    {% else %}
+        <p>No tasks yet.</p>
+    {% endfor %}
+</div>
+    <script>
+    document.querySelectorAll(".level").forEach(element => {
+        switch (element.textContent) {
+            case 'easy':
+                element.style.color = "green";
+                break;
+            case 'medium':
+                element.style.color = "orange";
+                break;
+            case 'hard':
+                element.style.color = "red";
+                break;
+
+            default:
+                break;
+        }
+    });
+</script>
 {% endblock %}
-{% endapply %}
