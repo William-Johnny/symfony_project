@@ -12,6 +12,7 @@ use App\Form\CreateTaskFormType;
 use App\Form\AssignFormType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 final class HomeController extends AbstractController
@@ -70,6 +71,7 @@ final class HomeController extends AbstractController
     #[Route('/task/{id}/assign', name: 'task_assign', methods: ['POST'])]
     public function assign(
         Task $task,
+        #[CurrentUser] User $currentUser,
         Request $request,
         EntityManagerInterface $em
     ): Response
@@ -81,6 +83,20 @@ final class HomeController extends AbstractController
         )) {
             throw $this->createAccessDeniedException('Invalid CSRF token.');
         }
+
+        function getBonus($taskArray) : int {
+        $bonus=0;
+
+        for ($i=0; $i < count($taskArray); $i++) {
+            if ($taskArray[$i]->getLevel() == "hard") {
+                $bonus+=2;
+            }else if ($taskArray[$i]->getLevel() == "medium"){
+                $bonus+=1;
+            }
+        }
+
+        return $bonus;
+    }
 
         $assigneeId = $request->request->get('assignee_id');
 
@@ -97,7 +113,23 @@ final class HomeController extends AbstractController
                 ]);
             }
 
-            $task->setAssignedTo($user);
+            $taskArray = $em
+                ->getRepository(Task::class)
+                ->findAll();
+
+            $userArray = $em
+                ->getRepository(User::class)
+                ->findAll();
+
+            if ($user->getAssignedTasks()->count() + getBonus($user->getAssignedTasks()) < (count($taskArray) + getBonus($taskArray)) / count($userArray)) {
+                $this->addFlash('error', $user->getAssignedTasks()->count());
+                $task->setAssignedTo($user);
+            }else{
+                $this->addFlash('error', 'This user has to much to do !');
+                return $this->redirectToRoute('task_assign', [
+                    'id' => $task->getId()
+                ]);
+            }
         } else {
             // Unassign if empty value selected
             $task->setAssignedTo(null);
